@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
 import { motion } from 'framer-motion';
 import mammoth from 'mammoth';
+import { Helmet } from 'react-helmet';
 
 function Home({ setCurrentPage }) {
   const [score, setScore] = useState(null);
@@ -383,6 +384,17 @@ function Home({ setCurrentPage }) {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 bg-gradient-to-br from-gray-100 to-blue-50">
+      
+
+      <Helmet>
+        <title>Free ATS Resume Checker | Boost Your LinkedIn & Naukri Visibility</title>
+        <meta name="description" content="Enhance your resume with our Free ATS Checker to boost selection chances on LinkedIn, Naukri, and more. Improve your career prospects today!" />
+        <meta name="keywords" content="ATS checker, free resume checker, resume optimization, LinkedIn resume, Naukri resume, job portal resume, CV checker, job application tips, online resume checker" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://webflie.com/" />
+      </Helmet>
+
+
       {/* Header */}
       <header className="bg-white shadow-md p-4 flex justify-between items-center md:px-6">
         <motion.div
@@ -511,6 +523,10 @@ function Home({ setCurrentPage }) {
             transition={{ duration: 0.5 }}
             className="bg-white rounded-xl shadow-md p-6 mb-6"
           >
+
+<h1 className="text-2xl font-bold mb-4 text-center" style={{ color: '#2563eb' }}>
+        Free ATS Resume Checker: Upload Your Resume
+    </h1>
             <FileUpload onFileUpload={handleFileUpload} />
             {isLoggedIn && (
               <div className="mt-6 space-y-4">
