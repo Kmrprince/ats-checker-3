@@ -1,0 +1,20 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "New Delhi",
+			"country": {
+				"code": "IN",
+				"name": "India"
+			},
+			"subdivision": {
+				"code": "DL",
+				"name": "National Capital Territory of Delhi"
+			},
+			"timezone": "Asia/Kolkata",
+			"latitude": 28.6327,
+			"longitude": 77.2198,
+			"postalCode": "110043"
+		},
+		"timestamp": 1740289907688
+	}
+}
