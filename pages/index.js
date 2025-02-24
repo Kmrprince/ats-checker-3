@@ -173,8 +173,8 @@ function Home({ setCurrentPage }) {
       return feedback;
     }
 
-    if (jobDesc.length < 200) {
-      feedback.push(`⚠️ Job description must be at least 200 characters (currently ${jobDesc.length} characters). Please provide a detailed description for accurate analysis.`);
+    if (jobDesc.length < 100) {
+      feedback.push(`⚠️ Job description must be at least 100 characters (currently ${jobDesc.length} characters). Please provide a detailed description for accurate analysis.`);
       return feedback;
     }
 
