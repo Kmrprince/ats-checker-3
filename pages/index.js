@@ -387,8 +387,8 @@ function Home({ setCurrentPage }) {
       
 
       <Helmet>
-        <title>Free ATS Resume Checker | Boost Your LinkedIn & Naukri Visibility</title>
-        <meta name="description" content="Enhance your resume with our Free ATS Checker to boost selection chances on LinkedIn, Naukri, and more. Improve your career prospects today!" />
+        <title>Webflie - Free ATS Resume Checker & Career Tools</title>
+<meta name="description" content="Webflie helps job seekers improve their resumes with our Free ATS Resume Checker. Boost your LinkedIn, Naukri, and career prospects today!">
         <meta name="keywords" content="ATS checker, free resume checker, resume optimization, LinkedIn resume, Naukri resume, job portal resume, CV checker, job application tips, online resume checker" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://webflie.com/" />
