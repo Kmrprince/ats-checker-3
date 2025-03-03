@@ -388,8 +388,8 @@ function Home({ setCurrentPage }) {
 
       <Helmet>
         <title>Webflie - Free ATS Resume Checker & Career Tools</title>
-<meta name="description" content="Webflie helps job seekers improve their resumes with our Free ATS Resume Checker. Boost your LinkedIn, Naukri, and career prospects today!" />
-        <meta name="keywords" content="ATS checker, free resume checker, resume optimization, LinkedIn resume, Naukri resume, job portal resume, CV checker, job application tips, online resume checker" />
+<meta name="description" content="Webflie - free ATS score checker helps you analyze and optimize your resume for LinkedIn, Naukri, and job portals to boost your job application success." />   
+     <meta name="keywords" content="ATS checker, free resume checker, resume optimization, LinkedIn resume, Naukri resume, job portal resume, CV checker, job application tips, online resume checker" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://webflie.com/" />
       </Helmet>
