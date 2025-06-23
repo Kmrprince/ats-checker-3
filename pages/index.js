@@ -1,35 +1,9 @@
-// pages/index.js
-import { useState, useRef } from 'react';
-import FileUpload from '../components/FileUpload';
-import { Document, Page } from '@react-pdf/renderer';
-import { signUp, logIn, logOut } from '../lib/auth';
-import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../lib/firebase';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock } from '@fortawesome/free-solid-svg-icons';
-import { motion } from 'framer-motion';
-import mammoth from 'mammoth';
-import { Helmet } from 'react-helmet';
+import { useState } from 'react';
+import Home from './Home';
+import Layout from '../components/Layout';
 
-function Home({ setCurrentPage }) {
-  const [score, setScore] = useState(null);
-  const [basicFeedback, setBasicFeedback] = useState([]);
-  const [deepFeedback, setDeepFeedback] = useState([]);
-  const [resumeFile, setResumeFile] = useState(null);
-  const [numPages, setNumPages] = useState(null);
-  const [docxContent, setDocxContent] = useState('');
-  const [pdfText, setPdfText] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function Index() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [jobTitle, setJobTitle] = useState('');
-  const [jobDescription, setJobDescription] = useState('');
-  const [showDeepAnalysis, setShowDeepAnalysis] = useState(false);
-  const [isResetPassword, setIsResetPassword] = useState(false);
-  const [resetEmail, setResetEmail] = useState('');
-  const [resetMessage, setResetMessage] = useState('');
-  const [aiFeedback, setAIFeedback] = useState('');
   const [pendingDeepAnalysis, setPendingDeepAnalysis] = useState(false);
   const previewRef = useRef(null);
 
@@ -173,8 +147,8 @@ function Home({ setCurrentPage }) {
       return feedback;
     }
 
-    if (jobDesc.length < 100) {
-      feedback.push(`⚠️ Job description must be at least 100 characters (currently ${jobDesc.length} characters). Please provide a detailed description for accurate analysis.`);
+    if (jobDesc.length < 200) {
+      feedback.push(`⚠️ Job description must be at least 200 characters (currently ${jobDesc.length} characters). Please provide a detailed description for accurate analysis.`);
       return feedback;
     }
 
@@ -387,9 +361,9 @@ function Home({ setCurrentPage }) {
       
 
       <Helmet>
-        <title>Webflie - Free ATS Resume Checker & Career Tools</title>
-<meta name="description" content="Webflie - free ATS score checker helps you analyze and optimize your resume for LinkedIn, Naukri, and job portals to boost your job application success." />   
-     <meta name="keywords" content="ATS checker, free resume checker, resume optimization, LinkedIn resume, Naukri resume, job portal resume, CV checker, job application tips, online resume checker" />
+        <title>Free ATS Resume Checker | Boost Your LinkedIn & Naukri Visibility</title>
+        <meta name="description" content="Enhance your resume with our Free ATS Checker to boost selection chances on LinkedIn, Naukri, and more. Improve your career prospects today!" />
+        <meta name="keywords" content="ATS checker, free resume checker, resume optimization, LinkedIn resume, Naukri resume, job portal resume, CV checker, job application tips, online resume checker" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://webflie.com/" />
       </Helmet>
