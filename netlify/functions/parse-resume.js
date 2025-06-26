@@ -11,11 +11,10 @@ exports.handler = async (event) => {
   }
 
   try {
-    console.log('Function invoked, body length:', event.body.length);
     const { fileData, fileType } = JSON.parse(event.body);
 
     if (!fileData || !fileType) {
-      console.log('Missing fileData or fileType');
+      console.log('Missing file data or type:', { fileData, fileType });
       return {
         statusCode: 400,
         body: JSON.stringify({ error: 'Missing file data or type' }),
@@ -23,19 +22,14 @@ exports.handler = async (event) => {
     }
 
     const buffer = Buffer.from(fileData, 'base64');
-    console.log('Buffer created, length:', buffer.length);
 
     let text = '';
     if (fileType === 'application/pdf') {
-      console.log('Parsing PDF');
       const pdfData = await pdfParse(buffer);
-      text = pdfData.text.trim();
-      console.log('PDF text extracted, length:', text.length);
+      text = pdfData.text;
     } else if (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-      console.log('Parsing DOCX');
-      const docxData = await mammoth.extractRawText({ buffer });
-      text = docxData.value.trim();
-      console.log('DOCX text extracted, length:', text.length);
+      const result = await mammoth.extractRawText({ buffer });
+      text = result.value;
     } else {
       console.log('Unsupported file type:', fileType);
       return {
@@ -44,14 +38,15 @@ exports.handler = async (event) => {
       };
     }
 
-    if (!text) {
-      console.log('No text extracted');
+    if (!text.trim()) {
+      console.log('No text extracted from file');
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'Failed to parse resume: No text extracted' }),
+        body: JSON.stringify({ error: 'No text extracted from file' }),
       };
     }
 
+    console.log('Text extracted successfully, length:', text.length);
     return {
       statusCode: 200,
       body: JSON.stringify({ message: text }),

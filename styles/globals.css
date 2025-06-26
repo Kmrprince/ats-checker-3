@@ -3,3 +3,9 @@
 @tailwind utilities;
 
 /* Any custom global styles can be added below */
+@media (min-width: 768px) {
+    .md\:text-5xl {
+        font-size: 2rem !important;
+        line-height: 1;
+    }
+}

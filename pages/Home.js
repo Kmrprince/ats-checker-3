@@ -3,10 +3,19 @@ import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import FileUpload from '../components/FileUpload';
 import { Document, Page } from '@react-pdf/renderer';
-import { useAuth } from '../lib/authContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { auth } from '../lib/firebase';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
-export default function Home() {
-  const { isLoggedIn, setIsLoggedIn, isModalOpen, setIsModalOpen, pendingDeepAnalysis, setPendingDeepAnalysis } = useAuth();
+export default function Home({
+  isLoggedIn,
+  setIsLoggedIn,
+  pendingDeepAnalysis,
+  setPendingDeepAnalysis,
+  setIsModalOpen,
+  setIsLogin,
+}) {
   const [score, setScore] = useState(null);
   const [basicFeedback, setBasicFeedback] = useState([]);
   const [deepFeedback, setDeepFeedback] = useState([]);
@@ -20,10 +29,15 @@ export default function Home() {
   const [aiFeedback, setAIFeedback] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [jobDescError, setJobDescError] = useState('');
+  const [formEmail, setFormEmail] = useState('');
+  const [formPassword, setFormPassword] = useState('');
+  const [formError, setFormError] = useState('');
+  const [formLoading, setFormLoading] = useState(false);
+  const [isFormLogin, setIsFormLogin] = useState(false); // Toggle between signup and login
   const previewRef = useRef(null);
 
   useEffect(() => {
-    console.log('useEffect: isLoggedIn:', isLoggedIn, 'pendingDeepAnalysis:', pendingDeepAnalysis, 'resumeFile:', !!resumeFile);
+    console.log('Home.js useEffect:', { isLoggedIn, pendingDeepAnalysis, resumeFile: !!resumeFile, setIsModalOpenType: typeof setIsModalOpen, setIsLoginType: typeof setIsLogin });
     if (isLoggedIn && pendingDeepAnalysis && resumeFile) {
       console.log('Triggering deep analysis after login');
       handleDeepAnalysis();
@@ -76,7 +90,7 @@ export default function Home() {
         const data = await response.json();
         console.log('Received data:', data);
 
-        if (data.message) {
+        if (data.message && data.message !== 'Function is working') {
           setResumeFile(file);
           if (file.type === 'application/pdf') {
             setPdfText(data.message);
@@ -85,8 +99,8 @@ export default function Home() {
           }
           updateATSScore(data.message, jobTitle, jobDescription);
         } else {
-          setErrorMessage(data.error || 'Failed to parse resume: No response from function');
-          console.log('No valid response in data:', data);
+          setErrorMessage(data.error || 'Failed to parse resume: Invalid response from function');
+          console.log('Invalid response in data:', data);
         }
       };
 
@@ -97,6 +111,44 @@ export default function Home() {
     } catch (error) {
       console.error('Upload error:', error);
       setErrorMessage(`Failed to parse file: ${error.message}`);
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setFormError('');
+    setFormLoading(true);
+    try {
+      console.log('Home.js: Attempting login with email:', formEmail);
+      await signInWithEmailAndPassword(auth, formEmail, formPassword);
+      setIsLoggedIn(true);
+      setFormEmail('');
+      setFormPassword('');
+      console.log('Home.js: Login successful');
+    } catch (err) {
+      setFormError(err.message);
+      console.error('Home.js: Login error:', err.message);
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    setFormError('');
+    setFormLoading(true);
+    try {
+      console.log('Home.js: Attempting signup with email:', formEmail);
+      await createUserWithEmailAndPassword(auth, formEmail, formPassword);
+      setIsLoggedIn(true);
+      setFormEmail('');
+      setFormPassword('');
+      console.log('Home.js: Signup successful');
+    } catch (err) {
+      setFormError(err.message);
+      console.error('Home.js: Signup error:', err.message);
+    } finally {
+      setFormLoading(false);
     }
   };
 
@@ -286,14 +338,34 @@ export default function Home() {
   };
 
   const handleDeepAnalysis = () => {
-    console.log('handleDeepAnalysis called, isLoggedIn:', isLoggedIn, 'resumeFile:', !!resumeFile);
+    console.log('handleDeepAnalysis called', {
+      isLoggedIn,
+      resumeFile: !!resumeFile,
+      setIsModalOpenType: typeof setIsModalOpen,
+      setIsLoginType: typeof setIsLogin,
+      jobTitle,
+      jobDescriptionLength: jobDescription.length
+    });
+
     if (!resumeFile) {
       setErrorMessage('Please upload a resume before performing deep analysis.');
+      console.log('No resume file uploaded');
       return;
     }
 
     if (!isLoggedIn) {
-      console.log('User not logged in, opening modal');
+      if (typeof setIsModalOpen !== 'function') {
+        console.error('setIsModalOpen is not a function:', setIsModalOpen);
+        setErrorMessage('Failed to open login modal. Please try logging in via the header.');
+        return;
+      }
+      if (typeof setIsLogin !== 'function') {
+        console.error('setIsLogin is not a function:', setIsLogin);
+        setErrorMessage('Failed to configure signup form.');
+        return;
+      }
+      console.log('User not logged in, opening signup modal');
+      setIsLogin(false); // Set to signup form
       setIsModalOpen(true);
       setPendingDeepAnalysis(true);
       return;
@@ -302,6 +374,7 @@ export default function Home() {
     const textToAnalyze = pdfText || docxContent;
     if (!textToAnalyze) {
       setErrorMessage('No resume text available for analysis.');
+      console.log('No text to analyze');
       return;
     }
 
@@ -359,6 +432,9 @@ export default function Home() {
   };
 
   const formatPdfText = (text) => {
+    if (!text || text === 'Function is working') {
+      return <p className="text-gray-600">No text extracted from PDF.</p>;
+    }
     const paragraphs = text.split(/\n\n|\.\s+|\n/).filter(line => line.trim());
     return paragraphs.map((para, index) => (
       <p key={index} className="mb-2 text-gray-600">{para.trim()}</p>
@@ -416,14 +492,97 @@ export default function Home() {
                 ))}
               </div>
               <div className="mt-8 flex justify-center">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleDeepAnalysis}
-                  className="bg-green-600 text-white px-8 py-4 rounded-lg shadow-md hover:bg-green-700 transition-all duration-300 text-lg font-semibold"
-                >
-                  Deep Analysis
-                </motion.button>
+                <div className="text-center w-full">
+                  {!isLoggedIn && (
+                    <>
+                      <p className="text-sm text-red-600 mb-2 font-medium">
+                        Please log in to access deep analysis
+                      </p>
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                        className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm mx-auto"
+                      >
+                        <h3 className="text-lg font-bold text-blue-600 mb-4">{isFormLogin ? 'Login' : 'Sign Up'}</h3>
+                        {isFormLogin ? (
+                          <form onSubmit={handleLogin} className="space-y-4">
+                            <input
+                              type="email"
+                              value={formEmail}
+                              onChange={(e) => setFormEmail(e.target.value)}
+                              placeholder="Email"
+                              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              required
+                            />
+                            <input
+                              type="password"
+                              value={formPassword}
+                              onChange={(e) => setFormPassword(e.target.value)}
+                              placeholder="Password"
+                              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              required
+                            />
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              type="submit"
+                              className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300"
+                              disabled={formLoading}
+                            >
+                              {formLoading ? 'Logging in...' : 'Login'}
+                            </motion.button>
+                          </form>
+                        ) : (
+                          <form onSubmit={handleSignUp} className="space-y-4">
+                            <input
+                              type="email"
+                              value={formEmail}
+                              onChange={(e) => setFormEmail(e.target.value)}
+                              placeholder="Email"
+                              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              required
+                            />
+                            <input
+                              type="password"
+                              value={formPassword}
+                              onChange={(e) => setFormPassword(e.target.value)}
+                              placeholder="Password"
+                              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              required
+                            />
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              type="submit"
+                              className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition duration-300"
+                              disabled={formLoading}
+                            >
+                              {formLoading ? 'Signing up...' : 'Sign Up'}
+                            </motion.button>
+                          </form>
+                        )}
+                        <button
+                          onClick={() => setIsFormLogin(!isFormLogin)}
+                          className="w-full text-blue-600 mt-4 hover:underline"
+                        >
+                          {isFormLogin ? 'Need an account? Sign Up' : 'Already have an account? Login'}
+                        </button>
+                        {formError && <p className="text-red-500 mt-2">{formError}</p>}
+                      </motion.div>
+                    </>
+                  )}
+                  <div className="flex justify-center mt-4">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleDeepAnalysis}
+                      className={`bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition-all duration-300 ${isLoggedIn ? 'px-6 py-3 text-lg font-semibold' : 'px-4 py-2 text-base font-medium'}`}
+                    >
+                      Deep Analysis
+                    </motion.button>
+                  </div>
+                </div>
               </div>
               {showDeepAnalysis && isLoggedIn && (
                 <div className="mt-6 space-y-4">
@@ -514,15 +673,22 @@ export default function Home() {
               ref={previewRef}
             >
               <h3 className="text-lg mb-3 text-gray-700">PDF Preview</h3>
-              <Document file={resumeFile} onLoadSuccess={onDocumentLoadSuccess} onLoadError={console.error}>
-                {numPages && Array.from(new Array(numPages), (el, index) => (
-                  <Page key={`page_${index + 1}`} pageNumber={index + 1} width={600} />
-                ))}
-              </Document>
-              {pdfText && (
+              {resumeFile && (
+                <Document file={resumeFile} onLoadSuccess={onDocumentLoadSuccess} onLoadError={(error) => {
+                  console.error('PDF load error:', error);
+                  setErrorMessage('Failed to load PDF preview.');
+                }}>
+                  {numPages && Array.from(new Array(numPages), (el, index) => (
+                    <Page key={`page_${index + 1}`} pageNumber={index + 1} width={600} />
+                  ))}
+                </Document>
+              )}
+              {pdfText ? (
                 <div className="mt-4 p-3 bg-gray-50 rounded-md overflow-auto max-h-64">
                   {formatPdfText(pdfText)}
                 </div>
+              ) : (
+                <p className="mt-4 text-gray-600">No text extracted from PDF.</p>
               )}
             </motion.div>
           )}
