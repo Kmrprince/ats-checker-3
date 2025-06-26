@@ -6,6 +6,8 @@ import { Document, Page } from '@react-pdf/renderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '../lib/firebase';
+import LogoSlider from '../components/LogoSlider';
+
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
 export default function Home({
@@ -703,9 +705,13 @@ export default function Home({
             >
               <h3 className="text-lg mb-3 text-gray-700">DOCX Preview</h3>
               <div className="text-gray-600 whitespace-pre-wrap">{docxContent}</div>
+              
             </motion.div>
+            
           )}
+           <LogoSlider />
         </motion.div>
+       
       </div>
     </div>
   );

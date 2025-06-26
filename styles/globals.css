@@ -9,3 +9,7 @@
         line-height: 1;
     }
 }
+
+.p-6 {
+    padding: 1.0rem !important;
+}

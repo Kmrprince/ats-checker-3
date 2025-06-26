@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
- 
     "start": "next start",
     "netlify-dev": "netlify dev"
   },
@@ -27,7 +26,9 @@
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.5",
     "react-helmet": "^6.1.0",
-    "react-router-dom": "^7.6.2"
+    "react-router-dom": "^7.6.2",
+    "react-slick": "^0.30.3",
+    "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
