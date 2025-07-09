@@ -31,7 +31,7 @@ export default function WhyATS({ isLoggedIn, setIsLoggedIn, pendingDeepAnalysis,
           content="ATS resume checker, ATS-friendly resume, resume optimization for ATS, job application tools, AI resume feedback, pass ATS screening, best ATS resume checker 2025, how to pass ATS with resume"
         />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://webflie.com/why-ats" />
+        <link rel="canonical" href="https://webflie.com/why-ats/" />
       </Helmet>
 
       <div className="flex flex-col flex-grow bg-gradient-to-br from-gray-100 to-blue-50">
