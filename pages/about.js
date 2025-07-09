@@ -31,7 +31,7 @@ export default function About({ isLoggedIn, setIsLoggedIn, pendingDeepAnalysis, 
           content="ATS resume checker, AI resume builder, resume ATS optimization, job application tools, career advancement platform, resume feedback AI, ATS-friendly resume, best ATS resume checker 2025"
         />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://webflie.com/about" />
+        <link rel="canonical" href="https://webflie.com/about/" />
       </Helmet>
 
       <div className="flex flex-col flex-grow bg-gradient-to-br from-gray-100 to-blue-50">
